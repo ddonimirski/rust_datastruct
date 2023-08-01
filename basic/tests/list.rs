@@ -1,4 +1,4 @@
-use list::List;
+use basic::List;
 
 #[cfg(test)]
 mod list_tests {

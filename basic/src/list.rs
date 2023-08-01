@@ -3,15 +3,17 @@
 ///
 /// expected API and performance:
 ///
-///   fn is_empty() -> bool            | O(1) | todo
-///   fn add_front(item:T)             | O(1) | todo
-///   fn rm_front(item:T) -> Option<T> | O(1) | todo
-///   fn head() -> Option<&mut T>      | O(1) | todo
-///   fn tail() -> Option<&mut T>      | O(1) | todo
-///   fn size() -> usize               | O(1) | todo
-///   fn contains(item:T) -> bool      | O(N) | todo
-///   fn add_after(item:T, elem:&T)    | O(N) | todo
-///   fn add_tail(item:T)              | O(1) | todo ?
+///   fn is_empty() -> bool                 | O(1) |
+///   fn add_front(item:T)                  | O(1) |
+///   fn rm_front(item:T) -> Option<T>      | O(1) |
+///   fn rm_first(item:T) -> Option<T>      | O(N) | todo
+///   fn rm_all(item:T) -> Option<Vec<T>>   | O(N) | todo ?
+///   fn head() -> Option<&mut T>           | O(1) |
+///   fn tail() -> Option<&mut T>           | O(1) |
+///   fn size() -> usize                    | O(1) |
+///   fn contains(item:T) -> bool           | O(N) |
+///   fn add_after(item:T, elem:&T)         | O(N) |
+///   fn add_tail(item:T)                   | O(1) |
 ///
 
 
@@ -42,6 +44,11 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> Node<T> {
     }
 }
 
+#[derive(Debug)]
+pub struct ListIterator<'a, T: std::fmt::Debug + std::cmp::PartialEq> {
+    next_node: Option<&'a Node<T>>
+}
+
 /// public struct to keep head and tail
 /// 
 #[derive(Debug)]
@@ -50,6 +57,7 @@ pub struct List<T:std::fmt::Debug + std::cmp::PartialEq> {
     tail: *mut Node<T>,
     size: usize,
 }
+
 
 
 impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
@@ -61,11 +69,17 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
             }
     }
 
+    /// retuns head iterator
+    /// 
+    pub fn iter(&self) -> ListIterator<'_, T> {
+        ListIterator{ next_node: self.head.as_deref() }
+    }
+
     /// create new empty list
     /// 
     /// # Example
     /// ``` 
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let list = List::<i32>::new();
     /// ```
@@ -82,7 +96,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let list = List::<i32>::new();
     /// let empty = list.is_empty();
@@ -99,7 +113,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(2);
@@ -118,11 +132,12 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
         self.size += 1;
     }
 
-    /// rm item from the front of the list
+    /// rm item from the front (head) of the list
+    /// retruns removed item if any
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(2);
@@ -145,14 +160,58 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
                 Some(old_head.value)
             }
         }
+    }
 
+    /// rm first epirance
+    pub fn rm_first(&mut self, elem: &T) -> Option<T> {
+        todo!()
+    }
+
+    /// remove all apirance of the item in the list
+    /// returns list of removed items ?
+    /// 
+    pub fn rm_all(&mut self, elem: &T) -> Option<Vec<T>> {
+        todo!()
+    }
+
+    /// counts elemetes 
+    /// 
+    /// # Example
+    /// ```
+    /// use basic::List;
+    /// 
+    /// let mut list = List::<i32>::new();
+    /// list.add_front(1);
+    /// list.add_front(1);
+    /// list.add_front(1);
+    /// list.add_front(1);
+    /// assert_eq!(list.count(&1), 4 as usize);
+    /// ```
+    /// 
+    pub fn count(&self, elem: &T) -> usize {
+
+        /*
+        let mut num = 0 as usize;
+        let mut current = self.head.as_ref();
+
+        while let Some(node) = current {
+            if node.value == *elem {
+                num += 1;
+            }
+
+            current = node.next.as_ref();
+        }
+        num
+         */
+
+        self.iter().filter(|value| **value == *elem).count()
     }
 
     /// returen reference to the first kept item
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -166,7 +225,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -181,7 +240,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -204,7 +263,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -227,7 +286,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -237,6 +296,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// ```
     pub fn contains(&self, item:&T) -> bool {
 
+        /*
         let mut current = self.head.as_ref();
 
         while let Some(node) = current {
@@ -246,14 +306,16 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
             }
             current = node.next.as_ref();
         }
-        false
+        false */
+
+        self.iter().any(|value| *item == *value)
     }
 
     /// add item after element 
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -291,7 +353,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// list.add_front(1);
@@ -338,7 +400,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// # Example
     /// ```
-    /// use list::List;
+    /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
     /// assert_eq!(list.size(), 0);
@@ -351,4 +413,35 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
         self.size.clone()
      }
 
+    /// function print list in format {...}
+    /// 
+    pub fn println(&self) {
+        let mut current = &self.head;
+        print!("{{");
+        while let Some(node) = current {
+            if node.next.is_none() {
+                println!("{:?}}}", node.value);
+                return;
+            }
+
+            print!("{:?}, ", node.value);
+            current = &node.next;
+        }
+        println!("}}");
+    }
+
+}
+
+impl<'a, T: std::fmt::Debug + std::cmp::PartialEq> Iterator for ListIterator<'a, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+
+        if let Some(node) = self.next_node {
+            self.next_node = node.next.as_deref();
+            Some(&node.value)
+        }
+        else {
+            None
+        }
+    }
 }
