@@ -4,7 +4,7 @@
 /// expected API and performance:
 ///
 ///   fn is_empty() -> bool                 | O(1) |
-///   fn add_front(item:T)                  | O(1) |
+///   fn push_front(item:T)                  | O(1) |
 ///   fn rm_front(item:T) -> Option<T>      | O(1) |
 ///   fn rm_first(item:T) -> Option<T>      | O(N) | todo
 ///   fn rm_all(item:T) -> Option<Vec<T>>   | O(N) | todo ?
@@ -13,7 +13,7 @@
 ///   fn size() -> usize                    | O(1) |
 ///   fn contains(item:T) -> bool           | O(N) |
 ///   fn add_after(item:T, elem:&T)         | O(N) |
-///   fn add_tail(item:T)                   | O(1) |
+///   fn push_back(item:T)                   | O(1) |
 ///
 
 
@@ -49,7 +49,7 @@ pub struct ListIterator<'a, T: std::fmt::Debug + std::cmp::PartialEq> {
     next_node: Option<&'a Node<T>>
 }
 
-/// public struct to keep head and tail
+/// keeps single linked nodes
 /// 
 #[derive(Debug)]
 pub struct List<T:std::fmt::Debug + std::cmp::PartialEq> {
@@ -116,10 +116,10 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(2);
+    /// list.push_front(2);
     /// assert_eq!(false, list.is_empty());
     /// ```
-    pub fn add_front(&mut self, item:T) {
+    pub fn push_front(&mut self, item:T) {
         self.head = Some(Box::new(Node::create(item, self.head.take())));
 
         if self.tail.is_null() {
@@ -140,8 +140,8 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(2);
-    /// list.add_front(1);
+    /// list.push_front(2);
+    /// list.push_front(1);
     /// assert_eq!(list.rm_front().unwrap(), 1);
     /// assert_eq!(*list.head().unwrap(), 2);
     /// ```
@@ -181,10 +181,10 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_front(1);
-    /// list.add_front(1);
-    /// list.add_front(1);
+    /// list.push_front(1);
+    /// list.push_front(1);
+    /// list.push_front(1);
+    /// list.push_front(1);
     /// assert_eq!(list.count(&1), 4 as usize);
     /// ```
     /// 
@@ -214,7 +214,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
+    /// list.push_front(1);
     /// assert_eq!(*list.head().unwrap(), 1);
     /// ```
     pub fn head(&self) -> Option<&T> {
@@ -228,7 +228,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
+    /// list.push_front(1);
     /// *list.head_mut().unwrap() = 2;
     /// assert_eq!(*list.head().unwrap(), 2);
     /// ```
@@ -243,8 +243,8 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_front(2);
+    /// list.push_front(1);
+    /// list.push_front(2);
     /// assert_eq!(*list.tail().unwrap(), 1);
     /// ```
     pub fn tail(&self) -> Option<&T> {
@@ -266,8 +266,8 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_front(2);
+    /// list.push_front(1);
+    /// list.push_front(2);
     /// *list.tail_mut().unwrap() = 3;
     /// assert_eq!(*list.tail().unwrap(), 3);
     /// ```
@@ -289,9 +289,9 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_front(2);
-    /// list.add_front(3);
+    /// list.push_front(1);
+    /// list.push_front(2);
+    /// list.push_front(3);
     /// assert!(list.contains(&2))
     /// ```
     pub fn contains(&self, item:&T) -> bool {
@@ -318,9 +318,9 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_front(3);
-    /// list.add_front(4);
+    /// list.push_front(1);
+    /// list.push_front(3);
+    /// list.push_front(4);
     /// list.add_after(2, &3);
     /// 
     /// assert_eq!(4, list.rm_front().unwrap());
@@ -356,13 +356,13 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// use basic::List;
     /// 
     /// let mut list = List::<i32>::new();
-    /// list.add_front(1);
-    /// list.add_tail(2);
+    /// list.push_front(1);
+    /// list.push_back(2);
     /// 
     /// assert_eq!(*list.tail().unwrap(), 2);
     /// assert_eq!(*list.head().unwrap(), 1);
     /// ```
-    pub fn add_tail(&mut self, item:T) {
+    pub fn push_back(&mut self, item:T) {
 
         /* O(N)
         let mut current = &mut self.head;
@@ -380,10 +380,10 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
             current = &mut node.next;
         }
        // it head is None
-       self.add_front(item); */
+       self.push_front(item); */
 
         if self.tail.is_null() {
-            self.add_front(item);
+            self.push_front(item);
         }
         else {
             unsafe {
@@ -404,7 +404,7 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     /// let mut list = List::<i32>::new();
     /// assert_eq!(list.size(), 0);
-    /// list.add_front(1);
+    /// list.push_front(1);
     /// assert_eq!(list.size(), 1);
     /// let _ = list.rm_front();
     /// assert_eq!(list.size(), 0);
@@ -417,17 +417,21 @@ impl<T:std::fmt::Debug + std::cmp::PartialEq> List<T> {
     /// 
     pub fn println(&self) {
         let mut current = &self.head;
-        print!("{{");
-        while let Some(node) = current {
-            if node.next.is_none() {
-                println!("{:?}}}", node.value);
-                return;
-            }
-
-            print!("{:?}, ", node.value);
-            current = &node.next;
+        if current.is_none() {
+            println!("[]");
         }
-        println!("}}");
+        else {
+        print!("[");
+            while let Some(node) = current {
+                if node.next.is_none() {
+                    println!("{:?}]", node.value);
+                    return;
+                }
+
+                print!("{:?}, ", node.value);
+                current = &node.next;
+            }
+        }
     }
 
 }
